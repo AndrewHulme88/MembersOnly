@@ -5,7 +5,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 const { Pool } = require("pg");
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -15,6 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: "mySecret", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get("/", (req, res) => res.render("index"));
+app.get("/register", (req, res) => res.render("register"));
+app.get("/login", (req, res) => res.render("login"));
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
