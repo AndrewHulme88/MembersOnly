@@ -20,7 +20,11 @@ passport.deserializeUser(async (id, done) => {
   done(null, user);
 });
 
-router.post("/signup", [
+router.get("/register", (req, res) => {
+  res.render("register");
+});
+
+router.post("/register", [
   body("email").isEmail().withMessage("Invalid email"),
   body("password").isLength({ min: 6 }).withMessage("Password to short"),
   body("confirmPassword").custom((value, { req }) => {

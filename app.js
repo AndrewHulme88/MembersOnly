@@ -19,7 +19,7 @@ app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use("/messages", messageRoutes);
 
-app.get("/", (req, res) => res.send("Welcome to the club!"));
+app.get("/", (req, res) => res.render("index"));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
