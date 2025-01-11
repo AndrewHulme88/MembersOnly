@@ -6,6 +6,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const router = express.Router();
 
+const SECRET_PASSCODE = "123";
+
 passport.use(new LocalStrategy(async (username, pasword, done) => {
   const user = await User.findOne({ where: { email: username } });
   if (!user || !(await bycrypt.compare(password, user.password))) {
@@ -52,5 +54,27 @@ router.post("/login", passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/auth/login",
 }));
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/auth/login");
+};
+
+router.get("/membership", ensureAuthenticated, (req, res) => {
+  res.render("membership");
+});
+
+router.post("/membership", async (req, res) => {
+  if (req.body.passcode === SECRET_PASSCODE) {
+    const user = await User.findByPk(req.user.id);
+    user.isMember = true;
+    await user.save();
+    res.redirect("/");
+  } else {
+    res.render("membership", { error: "Incorrect passcode"});
+  }
+});
 
 module.exports = router;
