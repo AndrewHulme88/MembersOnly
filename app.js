@@ -3,9 +3,10 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const { Pool } = require("pg");
-const { sequelize } = require("./models");
 const authRoutes = require("./routes/auth");
 const messageRoutes = require("./routes/messages");
+const { sequelize, User, Message } = require("./models");
+
 
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -24,5 +25,16 @@ app.get('/', (req, res) => {
     .then(messages => res.render('index', { user: req.user, messages }));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+sequelize.sync({ force: true })
+  .then(() => {
+    console.log("Database synced");
+    app.listen(process.env.PORT || 3000, () => {
+      console.log("Server running on http://localhost:3000");
+    });
+  })
+  .catch((error) => {
+    console.error("Error syncing database:", error);
+  });
+
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
