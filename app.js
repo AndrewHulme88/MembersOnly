@@ -19,7 +19,10 @@ app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use("/messages", messageRoutes);
 
-app.get("/", (req, res) => res.render("index"));
+app.get('/', (req, res) => {
+  Message.findAll({ include: User })
+    .then(messages => res.render('index', { user: req.user, messages }));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

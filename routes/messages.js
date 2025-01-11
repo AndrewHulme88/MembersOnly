@@ -10,14 +10,20 @@ router.post("/create", async (req, res) => {
   await Message.create({
     title: req.body.title,
     text: req.body.text,
-    authorId: req.user.authorId,
+    authorId: req.user.id,
   });
   res.redirect("/");
 });
 
 router.get("/", async (req, res) => {
-  const messages = await Message.findAll({ include: { model: User, as: "author" } });
-  res.json(messages);
+  const messages = await Message.findAll({
+    include: { model: User, as: "author" },
+  });
+
+  res.render("index", {
+    user: req.user,
+    messages: messages,
+  });
 });
 
 module.exports = router;
